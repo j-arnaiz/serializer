@@ -18,17 +18,29 @@
 
 namespace JMS\Serializer\Exclusion;
 
+use JMS\Serializer\Exclusion\GroupsExclusionStrategy;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Context;
 
 /**
- * Class: GroupsExclusionStrategy
+ * Class: ChildGroupsExclusionStrategy
  *
  * @see ExclusionStrategyInterface
  */
-class GroupsExclusionStrategy implements ExclusionStrategyInterface
+class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements ExclusionStrategyInterface
 {
+    const DEFAULT_CHILDGROUP = 'Default';
+
+    /**
+     * __construct
+     *
+     * @param array $groups
+     */
+    public function __construct(array $groups)
+    {
+        parent::__construct($groups);
+    }
     /**
      * {@inheritDoc}
      */
@@ -56,7 +68,7 @@ class GroupsExclusionStrategy implements ExclusionStrategyInterface
 
     private function getChildGroups($context)
     {
-        $metadata = $this->getParentMetadata();
+        $metadata = $this->getParentMetadata($context);
         $childGroups = array();
 
         if (isset($metadata, $metadata->childGroups)) {
@@ -78,11 +90,15 @@ class GroupsExclusionStrategy implements ExclusionStrategyInterface
 
         // if no childGroups present, serialize normally
         if (empty($childGroups)) {
-            return false;
+            return parent::shouldSkipProperty($property, $navigatorContext);
+        }
+
+        if ( ! $property->groups) {
+            return ! isset($childGroups[self::DEFAULT_CHILDGROUP]);
         }
 
         foreach ($property->groups as $group) {
-            if (isset($this->childGroups[$group])) {
+            if (isset($childGroups[$group])) {
                 return false;
             }
         }

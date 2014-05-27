@@ -209,7 +209,7 @@ class AnnotationDriver implements DriverInterface
                             if (false !== strpos($groupName, ',')) {
                                 throw new InvalidArgumentException(sprintf(
                                     'Invalid group name "%s" on "%s", did you mean to create multiple groups?',
-                                    implode(', ', $propertyMetadata->groups),
+                                    implode(', ', $propertyMetadata->childGroups),
                                     $propertyMetadata->class.'->'.$propertyMetadata->name
                                 ));
                             }

@@ -166,29 +166,18 @@ abstract class Context
     /**
      * @param array|string $groups
      */
-    public function setGroups($groups)
+    public function setGroups($groups, $childGroupsEnable = false)
     {
         if (empty($groups)) {
             throw new \LogicException('The groups must not be empty.');
         }
 
         $this->attributes->set('groups', (array) $groups);
-        $this->addExclusionStrategy(new GroupsExclusionStrategy((array) $groups));
-
-        return $this;
-    }
-
-    /**
-     * @param array|string $groups
-     */
-    public function setChildGroups($childGroups)
-    {
-        if (empty($childGroups)) {
-            throw new \LogicException('The groups must not be empty.');
+        if ($childGroupsEnable) {
+            $this->addExclusionStrategy(new ChildGroupsExclusionStrategy((array) $groups));
+        } else {
+            $this->addExclusionStrategy(new GroupsExclusionStrategy((array) $groups));
         }
-
-        $this->attributes->set('childGroups', (array) $childGroups);
-        $this->addExclusionStrategy(new ChildGroupsExclusionStrategy());
 
         return $this;
     }
