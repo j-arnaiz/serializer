@@ -54,10 +54,10 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
         $metaStack = $context->getMetadataStack();
         $metaCount = $metaStack->count();
 
-        for ($i = $metaCount - 1; $i > 0; $i--) {
+        for ($i = $metaCount - 2; $i > 0; $i--) {
             if ($metaStack->offsetExists($i)) {
                 $metadata = $metaStack->offsetGet($i);
-                if ($metadata instanceof PropertyMetadata) {
+                if ($metadata instanceof PropertyMetadata && !empty($metadata->childGroups)) {
                     return $metadata;
                 }
             }
@@ -71,9 +71,13 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
         $metadata = $this->getParentMetadata($context);
         $childGroups = array();
 
-        if (isset($metadata, $metadata->childGroups)) {
-            foreach ($metadata->childGroups as $childGroup) {
-                $childGroups[$childGroup] = true;
+        if (isset($metadata)) {
+            foreach ($this->groups as $group => $value) {
+                if (!empty($metadata->childGroups[$group])) {
+                    foreach ($metadata->childGroups[$group] as $childGroup) {
+                        $childGroups[$childGroup] = true;
+                    }
+                }
             }
         }
 

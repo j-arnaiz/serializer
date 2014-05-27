@@ -26,7 +26,7 @@ class GroupsExclusionStrategy implements ExclusionStrategyInterface
 {
     const DEFAULT_GROUP = 'Default';
 
-    private $groups = array();
+    protected $groups = array();
 
     public function __construct(array $groups)
     {
