@@ -49,7 +49,7 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
         return false;
     }
 
-    private function getParentMetadata($context)
+    private function getParentMetadataWithChildGroups($context)
     {
         $metaStack = $context->getMetadataStack();
         $metaCount = $metaStack->count();
@@ -68,10 +68,10 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
 
     private function getChildGroups($context)
     {
-        $metadata = $this->getParentMetadata($context);
-        $childGroups = array();
+        $metadata = $this->getParentMetadataWithChildGroups($context);
 
         if (isset($metadata)) {
+            $childGroups = array();
             foreach ($this->groups as $group => $value) {
                 if (!empty($metadata->childGroups[$group])) {
                     foreach ($metadata->childGroups[$group] as $childGroup) {
@@ -79,9 +79,11 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
                     }
                 }
             }
+
+            return $childGroups;
         }
 
-        return $childGroups;
+        return null;
     }
 
     /**
@@ -92,13 +94,13 @@ class ChildGroupsExclusionStrategy extends GroupsExclusionStrategy implements Ex
         // Getting parent childgroups
         $childGroups = $this->getChildGroups($navigatorContext);
 
-        // if no childGroups present, serialize normally
-        if (empty($childGroups)) {
+        // if no childGroups defined, use normal groups serializer
+        if ($childGroups === null) {
             return parent::shouldSkipProperty($property, $navigatorContext);
         }
 
         if ( ! $property->groups) {
-            return ! isset($childGroups[self::DEFAULT_CHILDGROUP]);
+            return true;
         }
 
         foreach ($property->groups as $group) {
