@@ -23,6 +23,7 @@ use JMS\Serializer\Exclusion\DepthExclusionStrategy;
 use JMS\Serializer\Exclusion\DisjunctExclusionStrategy;
 use JMS\Serializer\Exclusion\ExclusionStrategyInterface;
 use JMS\Serializer\Exclusion\GroupsExclusionStrategy;
+use JMS\Serializer\Exclusion\ChildGroupsExclusionStrategy;
 use JMS\Serializer\Exclusion\VersionExclusionStrategy;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
@@ -173,6 +174,28 @@ abstract class Context
 
         $this->attributes->set('groups', (array) $groups);
         $this->addExclusionStrategy(new GroupsExclusionStrategy((array) $groups));
+
+        return $this;
+    }
+
+    /**
+     * @param array|string $groups
+     */
+    public function setChildGroups($childGroups)
+    {
+        if (empty($childGroups)) {
+            throw new \LogicException('The groups must not be empty.');
+        }
+
+        $this->attributes->set('childGroups', (array) $childGroups);
+        $this->addExclusionStrategy(new ChildGroupsExclusionStrategy());
+
+        return $this;
+    }
+
+    public function enableChildGroupsChecks()
+    {
+        $this->addExclusionStrategy(new ChildGroupsExclusionStrategy());
 
         return $this;
     }
