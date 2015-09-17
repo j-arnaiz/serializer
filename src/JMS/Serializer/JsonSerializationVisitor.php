@@ -68,13 +68,13 @@ class JsonSerializationVisitor extends GenericSerializationVisitor
         $rs = parent::endVisitingObject($metadata, $data, $type, $context);
 
         // Force JSON output to "{}" instead of "[]" if it contains either no properties or all properties are null.
-        if (empty($rs)) {
-            $rs = new \ArrayObject();
+        //if (empty($rs)) {
+        //    $rs = new \ArrayObject();
 
-            if (array() === $this->getRoot()) {
-                $this->setRoot(clone $rs);
-            }
-        }
+        //    if (array() === $this->getRoot()) {
+        //        $this->setRoot(clone $rs);
+        //    }
+        //}
 
         return $rs;
     }
